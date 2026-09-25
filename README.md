@@ -12,7 +12,7 @@ AnonOS is a minimal, live Debian image designed to:
 
 ## Architecture
 
-VVV
+```
 +------------------+
 |   Applications   |
 |  (Firefox, etc.) |
@@ -42,7 +42,7 @@ VVV
 |  Network Interface|
 |  (MAC randomized) |
 +------------------+
-VVV
+```
 
 ## Quick Start
 
@@ -55,7 +55,7 @@ VVV
 
 ### Build
 
-VVVbash
+```bash
 sudo apt update
 sudo apt install live-build
 
@@ -63,22 +63,22 @@ cd anonos-mvp
 sudo lb clean
 sudo lb config
 sudo lb build
-VVV
+```
 
 The resulting ISO will be `live-image-amd64.hybrid.iso`.
 
 ### Run in a VM
 
-VVVbash
+```bash
 qemu-system-x86_64 -cdrom live-image-amd64.hybrid.iso -m 2048 -enable-kvm
-VVV
+```
 
 ### Flash to USB
 
-VVVbash
+```bash
 sudo dd if=live-image-amd64.hybrid.iso of=/dev/sdX bs=4M status=progress
 sync
-VVV
+```
 
 Replace `/dev/sdX` with your USB device (use `lsblk` to identify).
 
@@ -120,9 +120,9 @@ This happens automatically for all physical interfaces (`eth*`, `wlan*`, `en*`, 
 
 After booting AnonOS, open a terminal and run:
 
-VVVbash
+```bash
 anonos-status
-VVV
+```
 
 This will show:
 - Tor service status
@@ -133,9 +133,9 @@ This will show:
 
 You can also reapply the firewall manually:
 
-VVVbash
+```bash
 sudo anonos-apply-firewall
-VVV
+```
 
 ## Building in GitHub Codespaces
 
@@ -147,9 +147,9 @@ AnonOS includes a devcontainer configuration for building in GitHub Codespaces u
 2. The container auto-installs `live-build` and dependencies
 3. Run:
 
-VVVbash
+```bash
 make all
-VVV
+```
 
 4. Download the ISO via the forwarded port (port 8080) or via GitHub Actions artifacts.
 
@@ -168,7 +168,7 @@ No tools will be added until the privacy layer passes testing and the policy is 
 
 ## Project Structure
 
-VVV
+```
 anonos-mvp/
 ├── auto/config                          # live-build configuration
 ├── config/
@@ -182,7 +182,7 @@ anonos-mvp/
 │       └── usr/local/bin/               # Helper scripts
 └── docs/
     └── AUTHORIZED_USE_POLICY.md         # Tooling policy
-VVV
+```
 
 ## Roadmap
 
