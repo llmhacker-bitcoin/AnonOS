@@ -1,30 +1,19 @@
 #!/bin/sh
 set -e
 
-# AnonOS MVP - Normal hook: apply privacy hardening inside chroot
-# This runs after packages are installed but before the image is built
-
 echo "[AnonOS] Applying privacy hardening..."
 
-# Enable nftables service
 systemctl enable nftables
-
-# Enable Tor service
 systemctl enable tor
-
-# Disable systemd-timesyncd (we block NTP in firewall; time over Tor is future work)
 systemctl disable systemd-timesyncd || true
 
-# Apply clock hardening
 bash /etc/anonymization/clock-hardening.sh
 
-# Set correct permissions on sensitive files
 chmod 600 /etc/tor/torrc
 chmod 700 /etc/nftables
 chmod 600 /etc/nftables/anonos.conf
 
-# Create a convenience script for users to verify Tor status
-cat > /usr/local/bin/anonos-status << 'EOF'
+cat > /usr/local/bin/anonos-status << "INNEREOF"
 #!/bin/sh
 echo "=== AnonOS Privacy Status ==="
 echo ""
@@ -43,11 +32,10 @@ echo ""
 echo "Timezone:"
 cat /etc/timezone
 echo ""
-EOF
+INNEREOF
 chmod 755 /usr/local/bin/anonos-status
 
-# Create a script to regenerate firewall rules with correct Tor UID
-cat > /usr/local/bin/anonos-apply-firewall << 'EOF'
+cat > /usr/local/bin/anonos-apply-firewall << "INNEREOF"
 #!/bin/sh
 set -e
 
@@ -87,7 +75,7 @@ table inet filter {
 NFT_EOF
 
 echo "[AnonOS] Firewall applied."
-EOF
+INNEREOF
 chmod 755 /usr/local/bin/anonos-apply-firewall
 
 echo "[AnonOS] Hardening complete."

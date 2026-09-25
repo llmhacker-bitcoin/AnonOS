@@ -1,0 +1,12 @@
+#!/bin/sh
+case "$IFACE" in
+    eth*|wlan*|en*|wl*)
+        sleep 1
+        /sbin/ip link set dev "$IFACE" down
+        /usr/bin/macchanger -r "$IFACE"
+        /sbin/ip link set dev "$IFACE" up
+        ;;
+    *)
+        exit 0
+        ;;
+esac

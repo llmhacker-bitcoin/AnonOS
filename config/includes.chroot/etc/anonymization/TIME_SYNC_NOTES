@@ -3,12 +3,10 @@
 # Current approach:
 # - Firewall blocks outbound UDP port 123 (NTP) to prevent cleartext time leaks.
 # - systemd-timesyncd is present but may fail to sync until Tor is established.
-# - Tor can bootstrap without perfect time in most cases (uses consensus validity windows).
+# - Tor can bootstrap without perfect time in most cases.
 #
 # Future hardening:
-# - Replace NTP with sdwdate (or similar) fetching time over Tor from multiple sources.
-# - Implement "time poisoning" resistance by rejecting sudden large jumps after boot.
-# - Consider disabling all non-Tor time sync and relying on consensus-based time.
+# - Replace NTP with sdwdate fetching time over Tor from multiple sources.
 #
 # For this MVP, time leaks are mitigated by:
 # 1. UTC timezone (no local timezone leak).

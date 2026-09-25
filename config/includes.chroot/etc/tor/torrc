@@ -1,33 +1,13 @@
-# AnonOS MVP - Tor gateway configuration
-# All traffic must route through Tor; direct connections are blocked by nftables
-
-# Run as client only (no onion services, no relay)
 SOCKSPort 127.0.0.1:9050
 SOCKSPort 127.0.0.1:9150
-
-# TransPort and DNSPort for transparent proxying of non-Tor-aware applications
 TransPort 127.0.0.1:9040
 DNSPort   127.0.0.1:5353
-
-# Isolate client streams for better privacy
 SocksPolicy accept 127.0.0.1
 SocksPolicy reject *
-
-# Use entry guards to reduce fingerprinting
 UseEntryGuards 1
-
-# Disable potentially dangerous features
 DisableDebuggerAttachment 1
-
-# Avoid writing to disk more than necessary
 AvoidDiskWrites 1
-
-# Log to syslog only (no persistent logs on live system)
 Log notice syslog
-
-# Circuit build timeout tuning for privacy over speed
 CircuitBuildTimeout 60
 LearnCircuitBuildTimeout 0
-
-# New circuits periodically
 MaxCircuitDirtiness 10
