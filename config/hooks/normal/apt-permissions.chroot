@@ -1,0 +1,4 @@
+#!/bin/sh
+# Fix _apt user permissions inside chroot to prevent permission denied warnings
+chown _apt:root /var/lib/apt/lists/partial 2>/dev/null || true
+chmod 755 /var/lib/apt/lists/partial 2>/dev/null || true
