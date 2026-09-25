@@ -33,7 +33,6 @@ dhcpcd5
 macchanger
 
 # Time / clock
-ntpsec
 systemd-timesyncd
 
 # Essential userland
