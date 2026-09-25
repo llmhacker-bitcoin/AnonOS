@@ -1,0 +1,33 @@
+name: Build AnonOS MVP
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y live-build debootstrap xorriso isolinux syslinux-efi
+
+      - name: Build AnonOS
+        run: |
+          sudo lb clean
+          sudo lb config
+          sudo lb build
+
+      - name: Upload ISO Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: anonos-mvp-iso
+          path: live-image-amd64.hybrid.iso
+          retention-days: 5

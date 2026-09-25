@@ -1,0 +1,93 @@
+#!/bin/sh
+set -e
+
+# AnonOS MVP - Normal hook: apply privacy hardening inside chroot
+# This runs after packages are installed but before the image is built
+
+echo "[AnonOS] Applying privacy hardening..."
+
+# Enable nftables service
+systemctl enable nftables
+
+# Enable Tor service
+systemctl enable tor
+
+# Disable systemd-timesyncd (we block NTP in firewall; time over Tor is future work)
+systemctl disable systemd-timesyncd || true
+
+# Apply clock hardening
+bash /etc/anonymization/clock-hardening.sh
+
+# Set correct permissions on sensitive files
+chmod 600 /etc/tor/torrc
+chmod 700 /etc/nftables
+chmod 600 /etc/nftables/anonos.conf
+
+# Create a convenience script for users to verify Tor status
+cat > /usr/local/bin/anonos-status << 'EOF'
+#!/bin/sh
+echo "=== AnonOS Privacy Status ==="
+echo ""
+echo "Tor service:"
+systemctl is-active tor || echo "  [NOT RUNNING]"
+echo ""
+echo "nftables ruleset:"
+nft list ruleset | head -20
+echo ""
+echo "Current external IP (via Tor):"
+curl --socks5 127.0.0.1:9050 --silent https://check.torproject.org/api/ip || echo "  [FAILED - Tor may not be ready]"
+echo ""
+echo "MAC addresses:"
+ip link show | grep -E "(ether|link/ether)"
+echo ""
+echo "Timezone:"
+cat /etc/timezone
+echo ""
+EOF
+chmod 755 /usr/local/bin/anonos-status
+
+# Create a script to regenerate firewall rules with correct Tor UID
+cat > /usr/local/bin/anonos-apply-firewall << 'EOF'
+#!/bin/sh
+set -e
+
+TOR_UID=$(id -u debian-tor 2>/dev/null || echo "106")
+echo "[AnonOS] Applying firewall with Tor UID: $TOR_UID"
+
+nft -f - << NFT_EOF
+flush ruleset
+
+table inet filter {
+    chain input {
+        type filter hook input priority 0; policy drop;
+        iif "lo" accept
+        ct state established,related accept
+        ct state invalid drop
+        ip protocol icmp icmp type { echo-request, echo-reply, destination-unreachable, time-exceeded } limit rate 5/second accept
+        ip6 nexthdr icmpv6 icmpv6 type { echo-request, echo-reply, destination-unreachable, time-exceeded, nd-neighbor-solicit, nd-router-advert, nd-neighbor-advert } limit rate 5/second accept
+        counter drop
+    }
+
+    chain forward {
+        type filter hook forward priority 0; policy drop;
+        counter drop
+    }
+
+    chain output {
+        type filter hook output priority 0; policy drop;
+        oif "lo" accept
+        meta skuid 0 udp dport 5353 accept
+        meta skuid 0 tcp dport 9040 accept
+        meta skuid $TOR_UID tcp dport { 443, 80, 9001, 9030 } accept
+        tcp dport { 9050, 9150, 9040 } accept
+        udp dport 5353 accept
+        counter drop
+    }
+}
+NFT_EOF
+
+echo "[AnonOS] Firewall applied."
+EOF
+chmod 755 /usr/local/bin/anonos-apply-firewall
+
+echo "[AnonOS] Hardening complete."

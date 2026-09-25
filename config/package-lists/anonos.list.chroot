@@ -1,0 +1,63 @@
+# AnonOS MVP - Core privacy & networking packages
+
+# Live system
+debian-installer-launcher
+live-boot
+live-config
+live-config-systemd
+
+# Base utilities
+linux-image-amd64
+grub-pc
+syslinux
+isolinux
+
+# Tor & proxy layer
+tor
+tor-geoipdb
+nyx
+torsocks
+
+# Firewall
+nftables
+
+# Network tools
+iptables
+iproute2
+wireless-tools
+iw
+wpasupplicant
+dhcpcd5
+
+# MAC / hardware randomization
+macchanger
+
+# Time / clock
+ntpsec
+systemd-timesyncd
+
+# Essential userland
+sudo
+vim-tiny
+nano
+less
+curl
+wget
+ca-certificates
+
+# Hardening
+apparmor
+apparmor-profiles
+needrestart
+unattended-upgrades
+apt-listchanges
+
+# Display (minimal X for live use)
+xserver-xorg-core
+xserver-xorg-input-all
+xserver-xorg-video-fbdev
+xserver-xorg-video-vesa
+xinit
+openbox
+lxterminal
+firefox-esr

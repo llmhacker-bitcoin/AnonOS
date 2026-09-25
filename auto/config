@@ -1,0 +1,22 @@
+#!/bin/sh
+set -e
+
+# AnonOS MVP - Debian live-build configuration
+# Base: Debian stable (bookworm), amd64, standard+live
+
+lb config noauto \
+    --distribution bookworm \
+    --architectures amd64 \
+    --binary-images iso-hybrid \
+    --bootloader syslinux,grub-efi \
+    --debian-installer none \
+    --archive-areas "main contrib non-free non-free-firmware" \
+    --updates true \
+    --security true \
+    --apt-recommends false \
+    --cache true \
+    --cache-packages true \
+    --cache-stages "bootstrap chroot" \
+    --debootstrap-options "--variant=minbase" \
+    --memtest none \
+    "${@}"
